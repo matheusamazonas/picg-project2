@@ -29,8 +29,34 @@ void compare(Mat in, Mat out)
 Mat blur(Mat image)
 {
     Mat out = image.clone();
-    GaussianBlur(image, out, Size(11,11), 0);
+    int kernel_size = 5;
+    Mat kernel = Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+    filter2D(image, out, -1, kernel);
     return out;
+}
+
+Mat negative(Mat image)
+{
+    Mat out;
+    subtract(255, image , out);
+    return out;
+}
+
+
+void init ()
+{
+    cvNamedWindow("Derp Player");
+    inputVideo = VideoCapture(inputFileName);
+    Size frameSize = Size ((int) inputVideo.get(CV_CAP_PROP_FRAME_WIDTH),
+                           (int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT));
+    int ex = CV_FOURCC('m', 'p', '4', 'v');
+    
+    outputVideo.open(
+                     outputFilePath,
+                     ex,
+                     inputVideo.get(CV_CAP_PROP_FPS),
+                     frameSize,
+                     true);
 }
 
 
@@ -38,18 +64,8 @@ int main(int argc, const char * argv[])
 {
     Mat inFrame;
     Mat outFrame;
-    cvNamedWindow("Derp Player");
-    inputVideo = VideoCapture(inputFileName);
-    Size frameSize = Size ((int) inputVideo.get(CV_CAP_PROP_FRAME_WIDTH),
-                           (int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT));
-    int ex = CV_FOURCC('m', 'p', '4', 'v');
-
-    outputVideo.open(
-                     outputFilePath,
-                     ex,
-                     inputVideo.get(CV_CAP_PROP_FPS),
-                     frameSize,
-                     true);
+    
+    init();
 
     int c = 0;
     if (outputVideo.isOpened())
@@ -60,10 +76,13 @@ int main(int argc, const char * argv[])
             outFrame = blur(inFrame);
             //outputVideo.write(inFrame);
             compare(inFrame, outFrame);
+            char c = cvWaitKey(1);
+            if( c == 27 ) break;
             printf("Frame # %i\n", c);
             c++;
         }
     }
+    
     inputVideo.release();
     outputVideo.release();
     cvDestroyWindow("Derp Player");
