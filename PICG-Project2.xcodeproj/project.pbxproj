@@ -12,6 +12,8 @@
 		3E28DD7119A5081F00D0CD42 /* libopencv_core.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E28DD7019A5081F00D0CD42 /* libopencv_core.2.4.9.dylib */; };
 		3E28DD7519A5095E00D0CD42 /* sample1.avi in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3E28DD7319A5093500D0CD42 /* sample1.avi */; };
 		3E28DD7719A50BE200D0CD42 /* libopencv_highgui.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E28DD7619A50BE200D0CD42 /* libopencv_highgui.2.4.9.dylib */; };
+		3E69D20419BF32B900EE79AD /* libopencv_imgproc.2.4.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E69D20319BF32B900EE79AD /* libopencv_imgproc.2.4.9.dylib */; };
+		3E69D20A19BF5AD500EE79AD /* Wildlife.mp4 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3E69D20919BF5AD000EE79AD /* Wildlife.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +33,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				3E69D20A19BF5AD500EE79AD /* Wildlife.mp4 in CopyFiles */,
 				3E28DD7519A5095E00D0CD42 /* sample1.avi in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,6 +47,8 @@
 		3E28DD7019A5081F00D0CD42 /* libopencv_core.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.2.4.9.dylib; path = ../../../../../../../usr/local/lib/libopencv_core.2.4.9.dylib; sourceTree = "<group>"; };
 		3E28DD7319A5093500D0CD42 /* sample1.avi */ = {isa = PBXFileReference; lastKnownFileType = video.avi; path = sample1.avi; sourceTree = "<group>"; };
 		3E28DD7619A50BE200D0CD42 /* libopencv_highgui.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_highgui.2.4.9.dylib; path = ../../../../../../../usr/local/lib/libopencv_highgui.2.4.9.dylib; sourceTree = "<group>"; };
+		3E69D20319BF32B900EE79AD /* libopencv_imgproc.2.4.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_imgproc.2.4.9.dylib; path = ../../../../../../../usr/local/lib/libopencv_imgproc.2.4.9.dylib; sourceTree = "<group>"; };
+		3E69D20919BF5AD000EE79AD /* Wildlife.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Wildlife.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E69D20419BF32B900EE79AD /* libopencv_imgproc.2.4.9.dylib in Frameworks */,
 				3E28DD7719A50BE200D0CD42 /* libopencv_highgui.2.4.9.dylib in Frameworks */,
 				3E28DD7119A5081F00D0CD42 /* libopencv_core.2.4.9.dylib in Frameworks */,
 			);
@@ -62,6 +68,7 @@
 		3E021C1119A5069C00EA43D0 = {
 			isa = PBXGroup;
 			children = (
+				3E69D20319BF32B900EE79AD /* libopencv_imgproc.2.4.9.dylib */,
 				3E28DD7619A50BE200D0CD42 /* libopencv_highgui.2.4.9.dylib */,
 				3E28DD7019A5081F00D0CD42 /* libopencv_core.2.4.9.dylib */,
 				3E021C1C19A5069C00EA43D0 /* PICG-Project2 */,
@@ -80,6 +87,7 @@
 		3E021C1C19A5069C00EA43D0 /* PICG-Project2 */ = {
 			isa = PBXGroup;
 			children = (
+				3E69D20919BF5AD000EE79AD /* Wildlife.mp4 */,
 				3E28DD7319A5093500D0CD42 /* sample1.avi */,
 				3E021C1D19A5069C00EA43D0 /* main.cpp */,
 				3E021C1F19A5069C00EA43D0 /* PICG_Project2.1 */,
