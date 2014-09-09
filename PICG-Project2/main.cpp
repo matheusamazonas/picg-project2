@@ -5,12 +5,16 @@
 //  Created by Matheus Andrade on 8/20/14.
 //  Copyright (c) 2014 Matheus Andrade. All rights reserved.
 //
-#include <iostream> // for standard I/O
-#include <string>   // for strings
+//  Filters: blur, laplace, median
+//  Aritmetic operands:
+//
+//  Operadores pontuais: negativo, threshold, grayscale
+//  Operadores aritméticos: 
+//  Filtros: blur (borramento), sharpening (alto-reforço) median (mediana)
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <iostream>
 using namespace cv;
 using namespace std;
 
@@ -20,17 +24,10 @@ VideoCapture inputVideo;
 VideoWriter outputVideo;
 
 
-void compare(Mat in, Mat out)
-{
-    imshow("Example-in", in);
-    imshow("Example-out", out);
-}
-
-Mat blur(Mat image)
+Mat blur(Mat image, int size)
 {
     Mat out = image.clone();
-    int kernel_size = 5;
-    Mat kernel = Mat::ones( kernel_size, kernel_size, CV_32F )/ (float)(kernel_size*kernel_size);
+    Mat kernel = Mat::ones(size, size, CV_32F )/ (float)(size*size);
     filter2D(image, out, -1, kernel);
     return out;
 }
@@ -42,13 +39,50 @@ Mat negative(Mat image)
     return out;
 }
 
+Mat sharpening(Mat image, int size, float originalFactor = 1.0f, int neighbour = 1, float centerOffset = 0)
+{
+    Mat out = image.clone();
+    Mat kernel = Mat(size, size, CV_32F, Scalar(-neighbour));
+    int center = int(size/2);
+    kernel.at<float>(center, center) = (size * size * neighbour) - centerOffset;
+    filter2D(image, out, -1, kernel);
+    
+    out = (originalFactor * image) + ((1 - originalFactor) * out);
+    
+    return out;
+}
+
+Mat median(Mat image, int size)
+{
+    Mat out = image.clone();
+    
+    medianBlur(image, out, size);
+    return out;
+}
+
+Mat grayScale(Mat image)
+{
+    Mat out = image.clone();
+    
+    cvtColor(image, out, CV_RGB2GRAY);
+    return out;
+}
+
 
 void init ()
 {
-    cvNamedWindow("Derp Player");
     inputVideo = VideoCapture(inputFileName);
-    Size frameSize = Size ((int) inputVideo.get(CV_CAP_PROP_FRAME_WIDTH),
-                           (int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT));
+    int videoWidth = (int) inputVideo.get(CV_CAP_PROP_FRAME_WIDTH);
+    int videoHeight =( int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT);
+    Size frameSize = Size (videoWidth, videoHeight);
+    
+    namedWindow("Example-in");
+    namedWindow("Program 1");
+    namedWindow("Program 2");
+    moveWindow("Example-in", 0, 0);
+    moveWindow("Program 1", videoWidth, 0);
+    moveWindow("Program 2", 0, videoHeight + 45);
+    
     int ex = CV_FOURCC('m', 'p', '4', 'v');
     
     outputVideo.open(
@@ -59,6 +93,26 @@ void init ()
                      true);
 }
 
+Mat program1 (Mat image)
+{
+    int threshold_value = 100;
+    int threshold_type = 0;
+    int const max_BINARY_value = 255;
+    
+    Mat out = sharpening(image, 50, 0.0f, 1, -50);
+    out = blur(out, 3);
+    out = grayScale(out);
+    threshold( out, out, threshold_value, max_BINARY_value, threshold_type );
+    return out;
+}
+
+Mat program2 (Mat image)
+{
+    Mat out = median(image, 13);
+    out = sharpening(out, 5, 0.6f, 1);
+    out *= 1.2f;
+    return out;
+}
 
 int main(int argc, const char * argv[])
 {
@@ -66,26 +120,25 @@ int main(int argc, const char * argv[])
     Mat outFrame;
     
     init();
-
-    int c = 0;
+    
+    //int c = 0;
     if (outputVideo.isOpened())
     {
-        while (c < 100)
+        while (1)
         {
             if (!inputVideo.read(inFrame)) break;
-            outFrame = blur(inFrame);
-            //outputVideo.write(inFrame);
-            compare(inFrame, outFrame);
+            outFrame = inFrame.clone();
+            imshow("Example-in", inFrame);
+            imshow("Program 1", program1(inFrame));
+            imshow("Program 2", program2(inFrame));
+            //outputVideo.write(outFrame);
             char c = cvWaitKey(1);
             if( c == 27 ) break;
-            printf("Frame # %i\n", c);
-            c++;
         }
     }
     
     inputVideo.release();
     outputVideo.release();
-    cvDestroyWindow("Derp Player");
     return 0;
 }
 
