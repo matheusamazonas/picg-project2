@@ -9,7 +9,7 @@
 //  Aritmetic operands:
 //
 //  Operadores pontuais: negativo, threshold, grayscale
-//  Operadores aritméticos: 
+//  Operadores aritméticos:
 //  Filtros: blur (borramento), sharpening (alto-reforço) median (mediana)
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -19,10 +19,12 @@ using namespace cv;
 using namespace std;
 
 const char* inputFileName = "Wildlife.mp4";
-const char* outputFilePath = "/Users/matheusandrade/Desktop/output.mp4";
+const char* outputFilePath1 = "/Users/matheusandrade/Desktop/output1.mp4";
+const char* outputFilePath2 = "/Users/matheusandrade/Desktop/output2.mp4";
 VideoCapture inputVideo;
-VideoWriter outputVideo;
-
+VideoWriter outputVideo1;
+VideoWriter outputVideo2;
+bool exportMode = true;
 
 Mat blur(Mat image, int size)
 {
@@ -63,8 +65,8 @@ Mat median(Mat image, int size)
 Mat grayScale(Mat image)
 {
     Mat out = image.clone();
-    
     cvtColor(image, out, CV_RGB2GRAY);
+    cvtColor(out, out, CV_GRAY2RGB);
     return out;
 }
 
@@ -76,21 +78,35 @@ void init ()
     int videoHeight =( int) inputVideo.get(CV_CAP_PROP_FRAME_HEIGHT);
     Size frameSize = Size (videoWidth, videoHeight);
     
-    namedWindow("Example-in");
+    namedWindow("Original input");
     namedWindow("Program 1");
     namedWindow("Program 2");
-    moveWindow("Example-in", 0, 0);
+    moveWindow("Original input", 0, 0);
     moveWindow("Program 1", videoWidth, 0);
     moveWindow("Program 2", 0, videoHeight + 45);
     
     int ex = CV_FOURCC('m', 'p', '4', 'v');
-    
-    outputVideo.open(
-                     outputFilePath,
-                     ex,
-                     inputVideo.get(CV_CAP_PROP_FPS),
-                     frameSize,
-                     true);
+    if (exportMode)
+    {
+        outputVideo1.open(
+                          outputFilePath1,
+                          ex,
+                          inputVideo.get(CV_CAP_PROP_FPS),
+                          frameSize,
+                          false);
+        outputVideo2.open(
+                          outputFilePath2,
+                          ex,
+                          inputVideo.get(CV_CAP_PROP_FPS),
+                          frameSize,
+                          true);
+        if (!outputVideo1.isOpened() || !outputVideo2.isOpened())
+        {
+            printf("Error while opening the output files\n");
+            exit(-1);
+        }
+    }
+
 }
 
 Mat program1 (Mat image)
@@ -101,9 +117,9 @@ Mat program1 (Mat image)
     
     Mat out = sharpening(image, 50, 0.0f, 1, -50);
     out = blur(out, 3);
-    out = grayScale(out);
-    threshold( out, out, threshold_value, max_BINARY_value, threshold_type );
-    return out;
+    Mat gray = grayScale(out);
+    threshold(gray, gray, threshold_value, max_BINARY_value, threshold_type);
+    return gray;
 }
 
 Mat program2 (Mat image)
@@ -117,28 +133,35 @@ Mat program2 (Mat image)
 int main(int argc, const char * argv[])
 {
     Mat inFrame;
-    Mat outFrame;
+    Mat outFrame1;
+    Mat outFrame2;
     
     init();
     
-    //int c = 0;
-    if (outputVideo.isOpened())
+    while (1)
     {
-        while (1)
+        if (!inputVideo.read(inFrame)) break;
+        outFrame1 = program1(inFrame);
+        outFrame2 = program2(inFrame);
+        if (exportMode)
         {
-            if (!inputVideo.read(inFrame)) break;
-            outFrame = inFrame.clone();
-            imshow("Example-in", inFrame);
-            imshow("Program 1", program1(inFrame));
-            imshow("Program 2", program2(inFrame));
-            //outputVideo.write(outFrame);
+            outputVideo1.write(outFrame1);
+            outputVideo2.write(outFrame2);
+        }
+        else
+        {
+            imshow("Original input", inFrame);
+            imshow("Program 1", outFrame1);
+            imshow("Program 2", outFrame2);
+            
             char c = cvWaitKey(1);
             if( c == 27 ) break;
         }
     }
     
     inputVideo.release();
-    outputVideo.release();
+    outputVideo1.release();
+    outputVideo2.release();
     return 0;
 }
 
